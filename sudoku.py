@@ -1,9 +1,22 @@
 import tkinter as tk
+import requests
+
+class Sudoku():
+    def __init__(self):
+        self.refresh()
+
+    def refresh(self):
+        sudoku = requests.get("https://sudoku-api.vercel.app/api/dosuku").json()
+
+        grid = sudoku["newboard"]["grids"][0]
+        self.puzzle = grid["value"]
+        self.solution = grid["solution"]
+        self.difficulty = grid["difficulty"]
 
 class SudokuGUI():
-    def __init__(self, root, puzzle):
+    def __init__(self, root, sudoku):
         self.root = root
-        self.puzzle = puzzle
+        self.sudoku = sudoku
 
         root.title("Sudoku com GPT")
 
@@ -21,7 +34,7 @@ class SudokuGUI():
     def draw_puzzle(self):
         for i in range(9):
             for j in range(9):
-                cell_value = self.puzzle[i][j]
+                cell_value = self.sudoku.puzzle[i][j]
                 if cell_value != 0:
                     label = tk.Label(self.puzzle_frame, text=str(cell_value), font=("Arial", 16), padx=20, pady=20, borderwidth=1, relief="solid")
                 else:
@@ -39,24 +52,12 @@ class SudokuGUI():
         pass
 
     def new_puzzle_button_listener(self):
-        pass
-
-def generate_puzzle():
-    puzzle = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ]
-
-    return puzzle
+        self.sudoku.refresh()
+        self.draw_puzzle()
 
 if __name__ == "__main__":
+    sudoku = Sudoku()
+
     root = tk.Tk()
-    sudoku_gui = SudokuGUI(root, generate_puzzle())
+    sudoku_gui = SudokuGUI(root, sudoku)
     root.mainloop()
