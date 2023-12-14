@@ -18,27 +18,34 @@ class SudokuGUI():
         self.root = root
         self.sudoku = sudoku
 
-        root.title("Sudoku com GPT")
+        self.init_UI()
 
-        self.create_UI()
+    def init_UI(self):
+        self.games_frame = tk.Frame(self.root)
+        self.games_frame.pack()
 
-    def create_UI(self):
-        self.puzzle_frame = tk.Frame(self.root)
-        self.puzzle_frame.pack(padx=10, pady=10)
-        self.draw_puzzle()
+        puzzle_frame = tk.Frame(self.games_frame)
+        puzzle_frame.pack(side=tk.LEFT, pady=10, padx=10)
+        self.draw_game(self.sudoku.puzzle, puzzle_frame)
 
         self.buttons_frame = tk.Frame(self.root)
-        self.buttons_frame.pack(pady=10)
+        self.buttons_frame.pack(pady=5)
         self.draw_buttons()
 
-    def draw_puzzle(self):
+    def refresh_UI(self):
+        self.games_frame.pack_forget()
+        self.buttons_frame.pack_forget()
+
+        self.init_UI()
+
+    def draw_game(self, game, frame):
         for i in range(9):
             for j in range(9):
-                cell_value = self.sudoku.puzzle[i][j]
+                cell_value = game[i][j]
                 if cell_value != 0:
-                    label = tk.Label(self.puzzle_frame, text=str(cell_value), font=("Arial", 16), padx=20, pady=20, borderwidth=1, relief="solid")
+                    label = tk.Label(frame, text=str(cell_value), font=("Arial", 16), padx=20, pady=20, borderwidth=1, relief="solid")
                 else:
-                    label = tk.Label(self.puzzle_frame, text="", font=("Arial", 16), padx=26, pady=20, borderwidth=1, relief="solid", bg="lightgray")
+                    label = tk.Label(frame, text="", font=("Arial", 16), padx=26, pady=20, borderwidth=1, relief="solid", bg="lightgray")
                 label.grid(row=i, column=j)
 
     def draw_buttons(self):
@@ -49,15 +56,28 @@ class SudokuGUI():
         new_puzzle_button.pack()
 
     def resolve_button_listener(self):
-        pass
+        gpt_solution_frame = tk.Frame(self.games_frame)
+        gpt_solution_frame.pack(side=tk.LEFT, pady=10, padx=10)
+        self.draw_game(get_gpt_solution(self.sudoku.puzzle), gpt_solution_frame)
+
+        solution_frame = tk.Frame(self.games_frame)
+        solution_frame.pack(side=tk.LEFT, padx=10)
+        self.draw_game(self.sudoku.solution, solution_frame)
 
     def new_puzzle_button_listener(self):
         self.sudoku.refresh()
-        self.draw_puzzle()
+        self.refresh_UI()
+
+def get_gpt_solution(puzzle):
+    # Por enquanto
+    return puzzle
 
 if __name__ == "__main__":
     sudoku = Sudoku()
 
     root = tk.Tk()
+    root.title("Sudoku com GPT")
+
     sudoku_gui = SudokuGUI(root, sudoku)
+
     root.mainloop()
