@@ -1,5 +1,6 @@
 import tkinter as tk
 import requests
+import google.generativeai as genai
 
 class Sudoku():
     def __init__(self):
@@ -69,10 +70,15 @@ class SudokuGUI():
         self.refresh_UI()
 
 def get_gpt_solution(puzzle):
-    # Por enquanto
+    # Mandar o sudoku pro modelo
+    response = model.generate_content("Hi")
+
     return puzzle
 
 if __name__ == "__main__":
+    genai.configure(api_key="AIzaSyB68D7_R5URXuRuemSZlQFB5mxCX3vDaT8")
+    model = genai.GenerativeModel('gemini-pro')
+
     sudoku = Sudoku()
 
     root = tk.Tk()
