@@ -14,6 +14,7 @@ Você pode baixar este repositório usando o Git. Caso não possua o Git instala
 
 ```bash
 git clone https://github.com/seu-usuario/sudoku-solver-chatgpt.git
+```
 
 ## Compilar e Rodar o Código
 
