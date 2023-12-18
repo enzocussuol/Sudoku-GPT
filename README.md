@@ -55,7 +55,7 @@ Caso não possua o Git instalado, pode baixar o arquivo ZIP clicando em "Code" e
 
 ## Dependências
 
-- Python 3.x
+- Python 3.9+
 
 Seguintes bibliotecas do Python:
 - tikinter
