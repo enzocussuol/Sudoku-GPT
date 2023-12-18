@@ -1,6 +1,8 @@
 import tkinter as tk
 import requests
 import google.generativeai as genai
+import numpy as np
+from sudoku_solver_by_gpt import solve_sudoku
 
 class Sudoku():
     def __init__(self):
@@ -19,9 +21,9 @@ class SudokuGUI():
         self.root = root
         self.sudoku = sudoku
 
-        self.init_UI(show_solutions=False)
+        self.init_UI(show_solutions=False, code_solution=False)
 
-    def init_UI(self, show_solutions):
+    def init_UI(self, show_solutions, code_solution):
         self.games_frame = tk.Frame(self.root)
         self.games_frame.pack()
 
@@ -40,13 +42,13 @@ class SudokuGUI():
             gpt_solution_frame = tk.Frame(self.games_frame)
             gpt_solution_frame.pack(side=tk.LEFT, padx=10)
 
-            gpt_solution_label = tk.Label(gpt_solution_frame, text="Solução via GPT (Gemini)", font=("Arial", 16))
+            gpt_solution_label = tk.Label(gpt_solution_frame, text="Solução Diretamente via GPT (Gemini)" if not code_solution else "Solução via Código Gerado por GPT (Gemini)", font=("Arial", 16))
             gpt_solution_label.pack()
 
             gpt_solution_board_frame = tk.Frame(gpt_solution_frame)
             gpt_solution_board_frame.pack()
 
-            self.draw_game(get_gpt_solution(self.sudoku.puzzle), gpt_solution_board_frame)
+            self.draw_game(get_gpt_solution(self.sudoku.puzzle, code_solution), gpt_solution_board_frame)
 
             solution_frame = tk.Frame(self.games_frame)
             solution_frame.pack(side=tk.LEFT, padx=10)
@@ -67,11 +69,11 @@ class SudokuGUI():
 
         self.draw_buttons(show_solutions)
 
-    def refresh_UI(self, show_solutions):
+    def refresh_UI(self, show_solutions, code_solution):
         self.games_frame.pack_forget()
         self.buttons_frame.pack_forget()
 
-        self.init_UI(show_solutions)
+        self.init_UI(show_solutions, code_solution)
 
     def draw_game(self, game, frame):
         for i in range(9):
@@ -85,18 +87,21 @@ class SudokuGUI():
 
     def draw_buttons(self, show_solutions):
         if not show_solutions:
-            resolve_button = tk.Button(self.buttons_frame, text="Resolver com GPT", command=self.resolve_button_listener)
-            resolve_button.pack(pady=10)
+            direct_solution_button = tk.Button(self.buttons_frame, text="Resolver Diretamente via GPT", command= lambda: self.resolve_button_listener(code_solution=False))
+            direct_solution_button.pack(pady=10)
+
+            code_solution_button = tk.Button(self.buttons_frame, text="Resolver via Código Gerado por GPT", command= lambda: self.resolve_button_listener(code_solution=True))
+            code_solution_button.pack(pady=5, padx=10)
         else:
             new_puzzle_button = tk.Button(self.buttons_frame, text="Novo Tabuleiro", command=self.new_puzzle_button_listener)
             new_puzzle_button.pack()
 
-    def resolve_button_listener(self):
-        self.refresh_UI(show_solutions=True)
+    def resolve_button_listener(self, code_solution):
+        self.refresh_UI(show_solutions=True, code_solution=code_solution)
 
     def new_puzzle_button_listener(self):
         self.sudoku.refresh()
-        self.refresh_UI(show_solutions=False)
+        self.refresh_UI(show_solutions=False, code_solution=False)
 
 def puzzle_to_text(puzzle):
     puzzle_as_text = ""
@@ -139,58 +144,55 @@ def text_to_puzzle(text):
 
     return puzzle
 
-def get_gpt_solution(puzzle, use_code=False):
+def get_gpt_solution(puzzle, code_solution):
+    if code_solution:
+        solution = solve_sudoku(np.array(puzzle))
+        
+        return solution.tolist()
+
     prompt_to_gpt = '''
-Let's play the Sudoku game. This is a Sudoku board with unkown numbers marked as X:
+        Let's play the Sudoku game. This is a Sudoku board with unkown numbers marked as X:
 
-X X X | 4 X X | X 9 X 
-X X 7 | X X X | 6 X X 
-3 X X | X 5 X | X 7 4 
----------------------
-X X 9 | X 7 X | 3 1 X 
-1 X X | 9 X 8 | X X X 
-X X X | X X 1 | X 4 X 
----------------------
-X X X | 1 X X | 7 X 8
-X X X | 7 X 5 | X X X
-X 5 X | X X X | 9 3 X
+        X X X | 4 X X | X 9 X 
+        X X 7 | X X X | 6 X X 
+        3 X X | X 5 X | X 7 4 
+        ---------------------
+        X X 9 | X 7 X | 3 1 X 
+        1 X X | 9 X 8 | X X X 
+        X X X | X X 1 | X 4 X 
+        ---------------------
+        X X X | 1 X X | 7 X 8
+        X X X | 7 X 5 | X X X
+        X 5 X | X X X | 9 3 X
 
-To play the game, consider this rules:
-- You can use only numbers from 1 to 9;
-- Each 3x3 block can only contain numbers from 1 to 9;
-- Each vertical column can only contain numbers from 1 to 9;
-- Each horizontal row can only contain numbers from 1 to 9;
-- Each number in the 3x3 block, vertical column or horizontal row can be used only once;
-- The game is over when the whole Sudoku grid is correctly filled with numbers.
+        To play the game, consider this rules:
+        - You can use only numbers from 1 to 9;
+        - Each 3x3 block can only contain numbers from 1 to 9;
+        - Each vertical column can only contain numbers from 1 to 9;
+        - Each horizontal row can only contain numbers from 1 to 9;
+        - Each number in the 3x3 block, vertical column or horizontal row can be used only once;
+        - The game is over when the whole Sudoku grid is correctly filled with numbers.
 
-Based on the rules, the solution of this example is:
+        Based on the rules, the solution of this example is:
 
-8 2 1 | 4 6 7 | 5 9 3 
-5 4 7 | 3 1 9 | 6 8 2 
-3 9 6 | 8 5 2 | 1 7 4 
----------------------
-4 8 9 | 2 7 6 | 3 1 5 
-1 3 5 | 9 4 8 | 2 6 7 
-6 7 2 | 5 3 1 | 8 4 9 
----------------------
-2 6 4 | 1 9 3 | 7 5 8 
-9 1 3 | 7 8 5 | 4 2 6 
-7 5 8 | 6 2 4 | 9 3 1
+        8 2 1 | 4 6 7 | 5 9 3 
+        5 4 7 | 3 1 9 | 6 8 2 
+        3 9 6 | 8 5 2 | 1 7 4 
+        ---------------------
+        4 8 9 | 2 7 6 | 3 1 5 
+        1 3 5 | 9 4 8 | 2 6 7 
+        6 7 2 | 5 3 1 | 8 4 9 
+        ---------------------
+        2 6 4 | 1 9 3 | 7 5 8 
+        9 1 3 | 7 8 5 | 4 2 6 
+        7 5 8 | 6 2 4 | 9 3 1
+
+        Now, can you solve this Sudoku puzzle? Please answer using the same format provided.
     '''
-    
-    if not use_code:
-        prompt_to_gpt = prompt_to_gpt + "\nNow, can you solve this Sudoku puzzle? Please answer using the same format provided.\n\n"
-    else:
-        prompt_to_gpt = prompt_to_gpt + "\nNow, can you write a program and then use it to solve this Sudoku puzzle? Please print the output in the same format provided.\n\n"
 
-    prompt_to_gpt = prompt_to_gpt + puzzle_to_text(puzzle)
-
-    print(prompt_to_gpt)
+    prompt_to_gpt = prompt_to_gpt + "\n\n" + puzzle_to_text(puzzle)
 
     response = model.generate_content(prompt_to_gpt)
-
-    print(response.text)
-
     return text_to_puzzle(response.text)
 
 if __name__ == "__main__":
