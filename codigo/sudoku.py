@@ -139,21 +139,58 @@ def text_to_puzzle(text):
 
     return puzzle
 
-def get_gpt_solution(puzzle):
-    instructions_of_sudoku = "\nThis is a Sudoku game with unknown numbers marked as X. Could you solve it?. Please answer using the same format provided.\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\nHere are the rules:\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- You can use only numbers from 1 to 9;\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- Each 3x3 block can only contain numbers from 1 to 9;\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- Each vertical column can only contain numbers from 1 to 9;\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- Each horizontal row can only contain numbers from 1 to 9;\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- Each number in the 3x3 block, vertical column or horizontal row can be used only once;\n"
-    instructions_of_sudoku = instructions_of_sudoku + "\t- The game is over when the whole Sudoku grid is correctly filled with numbers.\n"
+def get_gpt_solution(puzzle, use_code=False):
+    prompt_to_gpt = '''
+Let's play the Sudoku game. This is a Sudoku board with unkown numbers marked as X:
 
-    prompt_to_gpt = puzzle_to_text(puzzle) + instructions_of_sudoku
+X X X | 4 X X | X 9 X 
+X X 7 | X X X | 6 X X 
+3 X X | X 5 X | X 7 4 
+---------------------
+X X 9 | X 7 X | 3 1 X 
+1 X X | 9 X 8 | X X X 
+X X X | X X 1 | X 4 X 
+---------------------
+X X X | 1 X X | 7 X 8
+X X X | 7 X 5 | X X X
+X 5 X | X X X | 9 3 X
+
+To play the game, consider this rules:
+- You can use only numbers from 1 to 9;
+- Each 3x3 block can only contain numbers from 1 to 9;
+- Each vertical column can only contain numbers from 1 to 9;
+- Each horizontal row can only contain numbers from 1 to 9;
+- Each number in the 3x3 block, vertical column or horizontal row can be used only once;
+- The game is over when the whole Sudoku grid is correctly filled with numbers.
+
+Based on the rules, the solution of this example is:
+
+8 2 1 | 4 6 7 | 5 9 3 
+5 4 7 | 3 1 9 | 6 8 2 
+3 9 6 | 8 5 2 | 1 7 4 
+---------------------
+4 8 9 | 2 7 6 | 3 1 5 
+1 3 5 | 9 4 8 | 2 6 7 
+6 7 2 | 5 3 1 | 8 4 9 
+---------------------
+2 6 4 | 1 9 3 | 7 5 8 
+9 1 3 | 7 8 5 | 4 2 6 
+7 5 8 | 6 2 4 | 9 3 1
+    '''
+    
+    if not use_code:
+        prompt_to_gpt = prompt_to_gpt + "\nNow, can you solve this Sudoku puzzle? Please answer using the same format provided.\n\n"
+    else:
+        prompt_to_gpt = prompt_to_gpt + "\nNow, can you write a program and then use it to solve this Sudoku puzzle? Please print the output in the same format provided.\n\n"
+
+    prompt_to_gpt = prompt_to_gpt + puzzle_to_text(puzzle)
 
     print(prompt_to_gpt)
 
     response = model.generate_content(prompt_to_gpt)
+
+    print(response.text)
+
     return text_to_puzzle(response.text)
 
 if __name__ == "__main__":
