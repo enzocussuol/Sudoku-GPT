@@ -2,7 +2,13 @@ import tkinter as tk
 import requests
 import google.generativeai as genai
 import numpy as np
+from dotenv import load_dotenv
+import os
 from sudoku_solver_by_gpt import solve_sudoku
+
+load_dotenv()
+
+api_key = os.getenv('API_KEY')
 
 class Sudoku():
     def __init__(self):
@@ -196,7 +202,7 @@ def get_gpt_solution(puzzle, code_solution):
     return text_to_puzzle(response.text)
 
 if __name__ == "__main__":
-    genai.configure(api_key="AIzaSyB68D7_R5URXuRuemSZlQFB5mxCX3vDaT8")
+    genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-pro')
 
     sudoku = Sudoku()
