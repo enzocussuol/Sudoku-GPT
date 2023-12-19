@@ -91,7 +91,7 @@ Para rodar o programa de resolução de Sudoku:
 
 ```bash
 $ cd codigo
-$ python3 sudoku_solver.py
+$ python3 sudoku.py
 ```
 
 <p align="center">
