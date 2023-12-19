@@ -94,12 +94,10 @@ $ cd codigo
 $ python3 sudoku_solver.py
 ```
 
+<p align="center">
+  <img width="auto" src="imgs/sudoku.gif" />
+</p>
+
 ## Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request para melhorias ou correções.
-
-## Referências
-
-- Backtracking Algorithms for Sudoku: link
-- Exploring AI Techniques for Sudoku Solving: link
-- Applying Neural Networks to Puzzle Solving: link
