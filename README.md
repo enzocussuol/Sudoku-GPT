@@ -19,7 +19,7 @@ Tabela de conteúdos
 
 - `relatorio.pdf`: Relatório detalhado sobre o desenvolvimento do programa e seus resultados.
 - `codigo/`: Pasta contendo o código-fonte do programa.
-- `dados/`: Pasta opcional para armazenar dados ou quebra-cabeças Sudoku.
+- `imgs/`: Pasta com mídia necessária para o repositório.
 
 ## Descrição
 
