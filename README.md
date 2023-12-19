@@ -47,7 +47,7 @@ A função "**get_gpt_solution**" cria o prompt e o envia para a API do Gemini. 
 Você pode baixar este repositório usando o Git com o seguinte comando:
 
 ```bash
-$ git clone https://github.com/seu-usuario/sudoku-solver-chatgpt.git
+$ git clone https://github.com/enzocussuol/Sudoku-GPT.git
 ```
 
 Caso não possua o Git instalado, pode baixar o arquivo ZIP clicando em "Code" e depois em "Download ZIP".
