@@ -198,6 +198,8 @@ def get_gpt_solution(puzzle, code_solution):
 
     prompt_to_gpt = prompt_to_gpt + "\n\n" + puzzle_to_text(puzzle)
 
+    print(prompt_to_gpt)
+
     response = model.generate_content(prompt_to_gpt)
     return text_to_puzzle(response.text)
 
