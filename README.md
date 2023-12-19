@@ -40,6 +40,8 @@ Como a função que recebe o tabuleiro para display e o retorno da resposta da r
 
 A função "**get_gpt_solution**" cria o prompt e o envia para a API do Gemini. No prompt, nós explicamos as regras, mostramos um exemplo de tabuleiro inicial e sua solução correta, visindo o melhor desempenho possível dessa IA.
 
+O modo de resolução através da função do arquivo **sudoku_solver_by_gpt.py**, que nos foi dada pelo Gemini, utiliza um algoritmo de backpropagation: ela tenta reolver a posição atual com todos valores possíveis de 1 a 9, verificando se é válido. Caso seja, chama a si mesma recursivamente para resolver o restante do problema.
+
 
 
 ## Como Baixar
